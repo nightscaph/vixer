@@ -1,0 +1,5 @@
+# ignore IOS system directory
+.DS_store
+
+# ignore "build" directory
+/build

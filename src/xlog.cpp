@@ -15,31 +15,31 @@ void XLog::info(const char *fmt, ...)
 {
   va_list argv;
   va_start(argv, fmt);
-  va_end(argv);
   push(Type::INFO, fmt, argv);
+  va_end(argv);
 }
 
 void XLog::warn(const char *fmt, ...)
 {
   va_list argv;
   va_start(argv, fmt);
-  va_end(argv);
   push(Type::WARNING, fmt, argv);
+  va_end(argv);
 }
 
 void XLog::error(const char *fmt, ...)
 {
   va_list argv;
   va_start(argv, fmt);
-  va_end(argv);
   push(Type::ERROR, fmt, argv);
+  va_end(argv);
 }
 
 void XLog::push(Type type, const char *fmt, va_list argv)
 {
   char date[32] = {0};
   time_t t = time(0);
-  strftime(date, sizeof(date), "%H:%M:%S", localtime(&t));
+  strftime(date, sizeof(date), "%H:%M:%S ", localtime(&t));
 
   char data[1024] = {0};
   vsprintf(data, fmt, argv);

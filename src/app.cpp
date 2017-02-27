@@ -1,7 +1,6 @@
 #include "app.h"
 #include "xlog.h"
 
-#include <iostream>
 #include <thread>
 
 App *App::_self = nullptr;
