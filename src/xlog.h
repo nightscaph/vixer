@@ -1,32 +1,26 @@
 #ifndef XLOG_H
 #define XLOG_H
 
-#include <list>
-#include <string>
 
 class XLog
 {
-  enum class Type:unsigned char {
-    INFO = 1,
-    WARNING,
-    ERROR
-  };
 public:
   static XLog &instance();
   void info(const char *fmt, ...);
   void warn(const char *fmt, ...);
   void error(const char *fmt, ...);
 
-protected:
+private:
   explicit XLog();
   ~XLog();
-  XLog(const XLog&) = delete;
-  XLog &operator =(const XLog&) = delete;
 
-  void push(Type type, const char *fmt, va_list argv);
+  XLog(const XLog &) = delete;
+  XLog(const XLog &&) = delete;
+  XLog &operator =(const XLog &) = delete;
+  XLog &operator =(const XLog &&) = delete;
 
-private:
-  std::list<std::string> _task;
+  class _XLogImp;
+  _XLogImp *_xlogimp;
 };
 
 #ifndef XLOG

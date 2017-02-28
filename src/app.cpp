@@ -2,6 +2,7 @@
 #include "xlog.h"
 
 #include <thread>
+#include <string>
 
 App *App::_self = nullptr;
 
@@ -31,7 +32,7 @@ int App::exec(void)
 {
   _active = true;
   while (_active) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
   }
   return _exec_value;
 }
