@@ -31,8 +31,14 @@ App *App::instance()
 int App::exec(void)
 {
   _active = true;
+  //int i = 0;
   while (_active) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+/*      if (i == 100) {
+        XLOG.info("Application start with: [%s]", "error");
+        i = 0;
+      }
+      ++i;
+*/    std::this_thread::sleep_for(std::chrono::milliseconds(20));
   }
   return _exec_value;
 }

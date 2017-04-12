@@ -12,21 +12,25 @@ public:
   explicit _XLogImp()
   {
     std::thread work([&](){
-      char fname[32] = {0};
-      time_t t = time(0);
-      int pos = strftime(fname, sizeof(fname), "%Y-%m-%d", localtime(&t));
-      strcat(fname + pos, ".xlog");
+      const time_t day_sec = 60 * 60 * 24;
+      while (true) {
+        char fname[32] = {0};
+        const time_t time_secs = time(0);
+        tm current_time = {0};
+        int pos = strftime(fname, sizeof(fname), "%Y-%m-%d", localtime_r(&time_secs, &current_time));
+        memcpy(fname + pos, ".xlog", sizeof(char) * 5);
 
-      std::ofstream out(fname, std::ios_base::out|std::ios_base::app);
-      if (out.is_open()) {
-        while (true) {
-          while(!_task.empty()) {
-            out << _task.front() << std::endl;
-            _task.pop_front();
+        std::ofstream out(fname, std::ios_base::out|std::ios_base::app);
+        if (out.is_open()) {
+          while (time(0) / day_sec == time_secs / day_sec) {
+            while(!_task.empty()) {
+              out << _task.front() << std::endl;
+              _task.pop_front();
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
           }
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+          out.close();
         }
-        out.close();
       }
     });
     work.detach();
@@ -34,16 +38,15 @@ public:
 
   void _parse(const char *type, const char *fmt, va_list &argv)
   {
-    do {
-      char task[2048] = {0};
-      const size_t size = sizeof(task);
-      time_t t = time(0);
-      int pos = strftime(task, size, "%H:%M:%S", localtime(&t));
-      pos += snprintf(task + pos, size - pos, " [%s]: ", type);
-      vsnprintf(task + pos, size - pos, fmt, argv);
+    char task[2048] = {0};
+    const size_t size = sizeof(task);
+    time_t t = time(0);
+    tm current_time = {0};
+    int pos = strftime(task, size, "%Y-%m-%d %H:%M:%S", localtime_r(&t, &current_time));
+    pos += snprintf(task + pos, size - pos, " [%s]: ", type);
+    vsnprintf(task + pos, size - pos, fmt, argv);
 
-      _task.emplace_back(task);
-    } while (false);
+    _task.emplace_back(task);
   }
 private:
     std::list<std::string> _task;
@@ -78,7 +81,7 @@ void XLog::info(const char *fmt, ...)
   va_end(argv);
 }
 
-void XLog::warn(const char *fmt, ...)
+void XLog::caution(const char *fmt, ...)
 {
   va_list argv;
   va_start(argv, fmt);

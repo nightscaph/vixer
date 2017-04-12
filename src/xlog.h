@@ -7,7 +7,7 @@ class XLog
 public:
   static XLog &instance();
   void info(const char *fmt, ...);
-  void warn(const char *fmt, ...);
+  void caution(const char *fmt, ...);
   void error(const char *fmt, ...);
 
 private:
