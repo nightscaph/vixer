@@ -1,6 +1,7 @@
 #include "xlog.h"
 
 #include <cstdarg>
+#include <cstring>
 #include <thread>
 #include <sys/time.h>
 #include <fstream>
@@ -18,7 +19,7 @@ public:
         const time_t time_secs = time(0);
         tm current_time = {0};
         int pos = strftime(fname, sizeof(fname), "%Y-%m-%d", localtime_r(&time_secs, &current_time));
-        memcpy(fname + pos, ".xlog", sizeof(char) * 5);
+		strcat(fname + pos, ".xlog");
 
         std::ofstream out(fname, std::ios_base::out|std::ios_base::app);
         if (out.is_open()) {
