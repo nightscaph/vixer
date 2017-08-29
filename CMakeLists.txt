@@ -8,7 +8,7 @@ if (UNIX)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif ()
 
-message (STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
+# message (STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
 aux_source_directory (./src SRC)
 
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

@@ -6,3 +6,6 @@
 
 # ignore files in "bin"
 bin/
+
+# ignore files in "xcode"
+xcode/
