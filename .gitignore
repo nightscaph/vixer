@@ -9,3 +9,7 @@ bin/
 
 # ignore files in "xcode"
 xcode/
+
+msvc/
+
+CMakeLists-cp.txt
