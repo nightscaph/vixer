@@ -1,5 +1,5 @@
 #include "app.h"
-#include "xlog.h"
+#include "xlog/xlog.h"
 
 #include <thread>
 #include <string>
@@ -38,8 +38,7 @@ int App::exec(void)
             i = 0;
         }
         ++i;
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return _exec_value;
 }

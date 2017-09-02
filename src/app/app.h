@@ -1,5 +1,5 @@
-#ifndef APP_H
-#define APP_H
+#ifndef APP_APP_H
+#define APP_APP_H
 
 class App
 {
@@ -22,4 +22,4 @@ private:
     static App *_self;
 };
 
-#endif // APP_H
+#endif // APP_APP_H

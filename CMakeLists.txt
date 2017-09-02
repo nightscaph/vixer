@@ -5,11 +5,17 @@ set (CMAKE_CXX_FLAGS "-std=c++11")
 
 if (UNIX)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+elseif (WIN32)
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif ()
 
 set(_HEADERS_FLAG *.h *.hpp *.hxx)
 set(_SOURCES_FLAG *.cc *.cpp *.cxx)
 set(_SOURCE_DIR "src")
+#set_target_properties(target PROPERTIES COMPILE_FLAGS “/EHsc")
+set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+include_directories(${_SOURCE_DIR})
 
 message (STATUS "---------[_HEADERS_FLAG] -> " ${_HEADERS_FLAG})
 message (STATUS "---------[_SOURCES_FLAG] -> " ${_SOURCES_FLAG})

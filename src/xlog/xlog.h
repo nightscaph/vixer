@@ -1,5 +1,5 @@
-#ifndef XLOG_H
-#define XLOG_H
+#ifndef XLOG_XLOG_H
+#define XLOG_XLOG_H
 
 
 class XLog
@@ -27,4 +27,4 @@ private:
 #define XLOG XLog::instance()
 #endif //XLOG
 
-#endif // XLOG_H
+#endif // XLOG_XLOG_H
