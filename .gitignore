@@ -1,15 +1,7 @@
-# ignore IOS system directory
 .DS_store
-
-# ignore "build" directory
 /build
-
-# ignore files in "bin"
 bin/
-
-# ignore files in "xcode"
 xcode/
-
 msvc/
-
 CMakeLists-cp.txt
+CMakeLists.txt.user
