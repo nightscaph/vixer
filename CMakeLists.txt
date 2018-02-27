@@ -1,9 +1,18 @@
+##
+# @brief brief
+# @version 1.0
+# @author Night
+# @email email
+# @company company
+# @date 2018-02-27 06:17:35
+##
+
 cmake_minimum_required (VERSION 2.8)
 project (vixer)
 
 set (CMAKE_CXX_FLAGS "-std=c++11")
 
-if (UNIX)
+if (UNIX OR MINGW)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 elseif (WIN32)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")

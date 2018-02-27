@@ -1,3 +1,12 @@
+/**
+ * @brief brief
+ * @version 1.0
+ * @author Night
+ * @email email
+ * @company company
+ * @date 2018-02-27 06:17:57
+ **/
+
 #include "xlog.h"
 
 #include <cstdarg>
@@ -5,6 +14,7 @@
 #include <thread>
 #include <fstream>
 #include <list>
+#include <functional>
 #ifndef _WIN32
 #include <sys/time.h>
 #else //_WIN32
@@ -13,61 +23,69 @@
 class XLog::_XLogImp
 {
 public:
-    explicit _XLogImp()
-    {
-        std::thread work([&](){
-            const time_t day_sec = 60 * 60 * 24;
-            while (true) {
-                char fname[32] = {0};
-                const time_t time_secs = time(0);
-                tm current_time = {0};
-#ifndef _WIN32
-                int pos = strftime(fname, sizeof(fname), "%Y-%m-%d", localtime_r(&time_secs, &current_time));
-#else //_WIN32
-                localtime_s(&current_time, &time_secs);
-                int pos = strftime(fname, sizeof(fname), "%Y-%m-%d", &current_time);
-#endif //_WIN32
-                strcat(fname + pos, ".xlog");
-                
-                std::ofstream out(fname, std::ios_base::out|std::ios_base::app);
-                if (out.is_open()) {
-                    while (time(0) / day_sec == time_secs / day_sec) {
-                        while(!_task.empty()) {
-#ifndef _WIN32
-                            out << _task.front() << std::endl;
-#else //_WIN32
-                            out << _task.front().data() << std::endl;
-#endif //_WIN32
-                            _task.pop_front();
-                        }
-                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                    }
-                    out.close();
-                }
-            }
-        });
-        work.detach();
-    }
-    
-    void _parse(const char *type, const char *fmt, va_list &argv)
-    {
-        char task[2048] = {0};
-        const size_t size = sizeof(task);
-        time_t t = time(0);
+  void initial()
+  {
+    std::thread work([&](){
+      while (true) {
+        char fname[32] = {0};
         tm current_time = {0};
+
+        get_current_time(current_time);
+        int pos = strftime(fname, sizeof(fname), "%y-%m", &current_time);
+        strcat(fname + pos, ".xlog");
+
+        int start_mon = current_time.tm_mon;
+        auto is_another_day = [&]() -> bool{
+          get_current_time(current_time);
+          return current_time.tm_mon != start_mon;
+        };
+
+        std::ofstream out(fname, std::ios_base::out|std::ios_base::app);
+        if (out.is_open()) {
+          while (!is_another_day()) {
+            while(!_task.empty()) {
 #ifndef _WIN32
-        int pos = strftime(task, size, "%Y-%m-%d %H:%M:%S", localtime_r(&t, &current_time));
+              out << _task.front() << std::endl;
 #else //_WIN32
-        localtime_s(&current_time, &t);
-        int pos = strftime(task, size, "%Y-%m-%d %H:%M:%S", &current_time);
+              out << _task.front().data() << std::endl;
 #endif //_WIN32
-        pos += snprintf(task + pos, size - pos, " [%s]: ", type);
-        vsnprintf(task + pos, size - pos, fmt, argv);
-        
-        _task.emplace_back(task);
-    }
+              _task.pop_front();
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+          }
+        }
+        out.close();
+      }
+    });
+    work.detach();
+  }
+
+  void _parse(const char *type, const char *fmt, va_list &argv)
+  {
+    char task[1024] = {0};
+    const size_t size = sizeof(task);
+    tm current_time = {0};
+    get_current_time(current_time);
+
+    int pos = snprintf(task, size, "[%s]", type);
+    pos += strftime(task + pos, size - pos, " %d-%H:%M:%S: ", &current_time);
+    vsnprintf(task + pos, size - pos, fmt, argv);
+
+    _task.emplace_back(task);
+  }
+
+  void get_current_time(tm &current_time)
+  {
+    time_t t = time(nullptr);
+#ifndef _WIN32
+    localtime_r(&t, &current_time)
+#else
+    localtime_s(&current_time, &t);
+#endif //_WIN32
+  }
+
 private:
-    std::list<std::string> _task;
+  std::list<std::string> _task;
 };
 
 
@@ -75,42 +93,29 @@ private:
 
 XLog &XLog::instance()
 {
-    static XLog xlog;
-    return xlog;
+  static XLog xlog;
+  return xlog;
 }
 
 XLog::XLog():_xlogimp(new _XLogImp)
 {
+  if (_xlogimp != nullptr) {
+    _xlogimp->initial();
+  }
 }
 
 XLog::~XLog()
 {
-    if (_xlogimp != nullptr) {
-        delete _xlogimp;
-        _xlogimp = nullptr;
-    }
+  if (_xlogimp != nullptr) {
+    delete _xlogimp;
+    _xlogimp = nullptr;
+  }
 }
 
-void XLog::info(const char *fmt, ...)
+void XLog::log(const char *type, const char *fmt, ...)
 {
-    va_list argv;
-    va_start(argv, fmt);
-    _xlogimp->_parse("INFO", fmt, argv);
-    va_end(argv);
-}
-
-void XLog::caution(const char *fmt, ...)
-{
-    va_list argv;
-    va_start(argv, fmt);
-    _xlogimp->_parse("CAUTION", fmt, argv);
-    va_end(argv);
-}
-
-void XLog::error(const char *fmt, ...)
-{
-    va_list argv;
-    va_start(argv, fmt);
-    _xlogimp->_parse("ERROR", fmt, argv);
-    va_end(argv);
+  va_list argv;
+  va_start(argv, fmt);
+  _xlogimp->_parse(type, fmt, argv);
+  va_end(argv);
 }
