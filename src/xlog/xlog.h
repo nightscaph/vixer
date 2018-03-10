@@ -9,24 +9,24 @@
  * @date 2018-02-27 06:18:02
  **/
 
+#include <memory>
 
+class XLogImpl;
 class XLog
 {
-  class _XLogImp;
 public:
   static XLog &instance();
   void log(const char *type, const char * fmt, ...);
     
 private:
   explicit XLog();
-  ~XLog();
-
+  
   XLog(const XLog &) = delete;
   XLog(const XLog &&) = delete;
   XLog &operator =(const XLog &) = delete;
   XLog &operator =(const XLog &&) = delete;
 
-  _XLogImp *_xlogimp;
+  std::unique_ptr<XLogImpl> _impl;
 };
 
 #ifndef XLOG
