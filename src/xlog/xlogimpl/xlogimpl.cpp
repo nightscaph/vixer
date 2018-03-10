@@ -8,7 +8,7 @@
 #include <thread>
 #include <fstream>
 #ifndef _WIN32
-#include <sys/time.h>
+#include <ctime>
 #else //_WIN32
 #endif //_WIN32
 
@@ -23,7 +23,7 @@ void XLogImpl::initial()
       
       get_current_time(current_time);
       int pos = strftime(fname, sizeof(fname), "%y-%m", &current_time);
-      strcat(fname + pos, ".xlog");
+      ::memmove(fname + pos, ".xlog", sizeof(".xlog"));
       
       int start_mon = current_time.tm_mon;
       
@@ -54,9 +54,9 @@ void XLogImpl::log(const char *type, const char *fmt, va_list &argv)
   tm current_time = {0};
   get_current_time(current_time);
   
-  int pos = snprintf(task, size, "[%s]", type);
-  pos += strftime(task + pos, size - pos, " %d-%H:%M:%S: ", &current_time);
-  vsnprintf(task + pos, size - pos, fmt, argv);
+  int pos = ::snprintf(task, size, "[%s]", type);
+  pos += ::strftime(task + pos, size - pos, " %d-%H:%M:%S: ", &current_time);
+  ::vsnprintf(task + pos, size - pos, fmt, argv);
   
   _task.emplace_back(task);
 }
@@ -67,9 +67,9 @@ void XLogImpl::get_current_time(tm &time)
 {
   time_t t = ::time(nullptr);
 #ifndef _WIN32
-  localtime_r(&t, &time);
+  ::localtime_r(&t, &time);
 #else
-  localtime_s(&time, &t);
+  ::localtime_s(&time, &t);
 #endif //_WIN32
 }
 
