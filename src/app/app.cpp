@@ -7,17 +7,17 @@
  * @date 2018-02-27 06:17:42
  **/
 
-#include "app.h"
-#include "xlog/xlog.h"
-
 #include <thread>
 #include <string>
 
-App *App::_self = nullptr;
+#include "app.h"
+#include "xlog/xlog.h"
 
-App::App(int argc, char **argv):_active(false), _exec_value(0)
+App* App::_self = nullptr;
+
+App::App(int argc, char** argv):_active(false), _exec_value(0)
 {
-  char **arg = argv;
+  char** arg = argv;
   std::string arguments;
   if (argc != 0 && argv != nullptr) {
     while (*arg != nullptr) {
@@ -30,9 +30,10 @@ App::App(int argc, char **argv):_active(false), _exec_value(0)
 
 App::~App()
 {
+  _active = false;
 }
 
-App *App::instance()
+App* App::instance()
 {
   return App::_self;
 }
@@ -40,13 +41,8 @@ App *App::instance()
 int App::exec(void)
 {
   _active = true;
-  int i = 0;
   while (_active) {
-    if (i == 100) {
-      XLOG.log("ERR", "current step: %d", i);
-      i = 0;
-    }
-    ++i;
+    work();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   return _exec_value;
@@ -56,4 +52,13 @@ void App::quit(int val)
 {
     _exec_value = val;
     _active = false;
+}
+
+void App::work()
+{
+  static int i = 0;
+  if (++i >= 500) {
+    _exec_value = 3;
+    _active = false;
+  }
 }

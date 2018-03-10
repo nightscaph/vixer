@@ -10,7 +10,7 @@
 #include "app/app.h"
 #include <iostream>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   std::set_unexpected([]{
     std::cerr << "Exit(code 1) with unspecified exception" << std::endl;

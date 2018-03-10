@@ -12,7 +12,7 @@
 
 #include <cstdarg>
 
-XLog &XLog::instance()
+XLog& XLog::instance()
 {
   static XLog xlog;
   return xlog;
@@ -23,7 +23,12 @@ XLog::XLog():_impl(new XLogImpl)
   _impl->initial();
 }
 
-void XLog::log(const char *type, const char *fmt, ...)
+XLog::~XLog()
+{
+  delete _impl;
+}
+
+void XLog::log(const char* type, const char* fmt, ...)
 {
   va_list argv;
   va_start(argv, fmt);

@@ -11,17 +11,20 @@
 #include <string>
 #include <list>
 
-struct tm;
 class XLogImpl
 {
 public:
+  XLogImpl();
+  ~XLogImpl();
+  
   void initial();
-  void log(const char *type, const char *fmt, va_list &argv);
+  void log(const char* type, const char* fmt, va_list& argv);
   
 private:
-  void get_current_time(tm &time);
-  bool is_another_mon(tm &time, int day);
+  void get_current_time(tm& time);
+  bool is_another_mon(tm& time, int mon);
   
+  bool _active;
   std::list<std::string> _task;
 };
 
