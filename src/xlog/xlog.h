@@ -9,8 +9,6 @@
  * @date 2018-02-27 06:18:02
  **/
 
-//#include <memory>
-
 class XLogImpl;
 class XLog
 {

@@ -26,8 +26,9 @@ set (EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 include_directories(${_SOURCE_DIR})
 
-message (STATUS "---------[_HEADERS_FLAG] -> " ${_HEADERS_FLAG})
-message (STATUS "---------[_SOURCES_FLAG] -> " ${_SOURCES_FLAG})
+add_definitions(-DOPENSSL_PATH)
+
+message (STATUS "----[OPENSSL_PATH] -> " ${OPENSSL_PATH})
 
 macro(_set_profile src_dir)
 	foreach(_f ${ARGN})
@@ -55,5 +56,9 @@ endmacro(_set_profile)
 
 _set_profile(${_SOURCE_DIR} _HEADERS_FLAG _SOURCES_FLAG)
 
+include_directories(${OPENSSL_PATH}/include)
+link_directories(${OPENSSL_PATH}/lib)
+
+link_libraries(ssl crypto)
 
 add_executable(${PROJECT_NAME} ${_FILES})

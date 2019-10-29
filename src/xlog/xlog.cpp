@@ -18,7 +18,8 @@ XLog& XLog::instance()
   return xlog;
 }
 
-XLog::XLog():_impl(new XLogImpl)
+XLog::XLog()
+  : _impl(new XLogImpl)
 {
   _impl->initial();
 }

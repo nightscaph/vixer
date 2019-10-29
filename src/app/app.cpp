@@ -15,7 +15,10 @@
 
 App* App::_self = nullptr;
 
-App::App(int argc, char** argv):_active(false), _exec_value(0)
+App::App(int argc, char** argv)
+  : _active(false),
+    _exec_value(0),
+    _loop_timein_terval(1)
 {
   char** arg = argv;
   std::string arguments;
@@ -25,7 +28,7 @@ App::App(int argc, char** argv):_active(false), _exec_value(0)
     }
   }
   _self = this;
-  XLOG.log("INFO", "Application start with: [%s]", arguments.data());
+  XLOG.log("START", "Application start with: [%s]", arguments.data());
 }
 
 App::~App()
@@ -43,22 +46,24 @@ int App::exec(void)
   _active = true;
   while (_active) {
     work();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    //std::this_thread::yield();
+    std::this_thread::sleep_for(std::chrono::milliseconds(_loop_timein_terval));
   }
   return _exec_value;
 }
 
 void App::quit(int val)
 {
-    _exec_value = val;
-    _active = false;
+  XLOG.log("END", "Application exit with code %d\n", val);
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  _exec_value = val;
+  _active = false;
 }
 
 void App::work()
 {
   static int i = 0;
-  if (++i >= 500) {
-    _exec_value = 3;
-    _active = false;
+  if (++i >= 1 * 1e+004/_loop_timein_terval) {
+    quit(3);
   }
 }

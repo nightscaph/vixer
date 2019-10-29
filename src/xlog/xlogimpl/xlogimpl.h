@@ -9,6 +9,7 @@
 #define xlogimpl_h
 
 #include <string>
+#include <sstream>
 #include <list>
 
 class XLogImpl
@@ -25,7 +26,10 @@ private:
   bool is_another_mon(tm& time, int mon);
   
   bool _active;
+  int _loop_time_interval;    //ms
   std::list<std::string> _task;
+  std::stringstream _sstream;
+  std::mutex _mutex;
 };
 
 #endif /* xlogimpl_h */

@@ -28,6 +28,7 @@ private:
   
   bool _active;
   int _exec_value;
+  int _loop_timein_terval;        //ms
 
   static App* _self;
 };

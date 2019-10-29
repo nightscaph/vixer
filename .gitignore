@@ -3,5 +3,6 @@
 bin/
 xcode/
 msvc/
+linux/
 CMakeLists-cp.txt
 CMakeLists.txt.user
